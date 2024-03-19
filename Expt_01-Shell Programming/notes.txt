@@ -1,0 +1,12 @@
+To execute a file in command line,
+./file_name.sh _arguments_
+
+To initialize a variable, no white spaces on both sides of '=' sign
+
+The first argument is stored in $1, the second in $2, the third in $3…and so on. 
+We cannot use $0 as that references your Bash script itself.
+
+The $# special variable will let you find out the total number of arguments passed
+
+An array is initialized by assign space-delimited values enclosed in ()
+The total number of elements in the array is referenced by ${#arrayname[@]}
