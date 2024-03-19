@@ -1,0 +1,215 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+double timeQuantum = 0.0, totalBurstTime = 0.0;
+int numProcess = 0;
+typedef struct PCB
+{
+	int procId;
+	int cpuBurst;
+	int waitingTime;
+	struct PCB *next;
+	struct PCB *prev;
+} PCB;
+
+PCB *head = NULL;
+
+void addProcess(int PID,int CB) //block 1
+{
+    PCB *node  =  (PCB*) malloc (sizeof(PCB)); 
+    node -> procId = PID;
+    node -> cpuBurst = CB;
+    node -> next = NULL;
+    node -> prev = NULL;
+    if (node == NULL)
+    {
+        printf("\nMemory can't be allocated\n");
+        return;
+    } 
+    if (head == NULL)
+    {
+        node -> next  =  node;
+        node -> prev  =  node;
+        head  =  node;
+        return;
+    }
+    head -> prev -> next  =  node;
+    node -> prev  =  head -> prev;
+    node -> next  =  head;
+    head -> prev  =  node;
+}
+
+void insertEnd(int PID,int CB)
+{
+    PCB *node  =  (PCB*) malloc (sizeof(PCB)); 
+    node -> procId = PID;
+    node -> cpuBurst = CB;
+    node -> next = NULL;
+    node -> prev = NULL;
+    if (node == NULL)
+    {
+        printf("\nMemory can\'t be allocated\n");
+        return;
+    } 
+    if(node)
+    {
+        if (head == NULL)
+        {
+            node -> next  =  node;
+            node -> prev  =  node;
+            head  =  node;
+            return;
+        }
+        head -> prev -> next  =  node;
+        node -> prev  =  head -> prev;
+        node -> next  =  head;
+        head -> prev  =  node;
+    }
+}
+void orderProcess() //block 5
+{
+    PCB *cur = head;
+    while(cur -> next != head)
+    {
+        if(cur -> cpuBurst > timeQuantum)
+        {
+            int CB1 = cur -> cpuBurst;
+            cur -> cpuBurst = timeQuantum;
+            CB1 -= timeQuantum;
+            while(CB1 > timeQuantum)
+            {
+                insertEnd(cur -> procId,timeQuantum);
+                CB1 -= timeQuantum;
+            }
+            insertEnd(cur -> procId,CB1);
+        }
+        cur = cur -> next;
+    }
+}
+
+void waiting() //block 6
+{
+    PCB *temp = head;
+    int dummy = 0;
+    while(temp -> next != head)
+    {
+        temp -> waitingTime = dummy;
+        dummy = dummy + (temp -> cpuBurst);
+        temp = temp -> next;
+    }
+    temp -> waitingTime = dummy;
+    dummy = dummy + (temp -> cpuBurst);
+}
+
+void removeProcess() //block 2
+{
+    if (head == NULL) 
+    {
+        printf("\nList is Empty\n");
+        return;
+    } 
+    else if (head -> next == head) 
+    {
+        free(head);
+        head = NULL;
+        return;
+    } 
+    PCB *temp = head;
+    head -> prev -> next = head -> next;
+    head -> next -> prev = head -> prev;
+    head = head -> next; 
+    free(temp);
+    temp = NULL;
+}
+
+void displayProcess() //block 3
+{
+    if (head != NULL)
+    {
+        PCB *temp = head;
+        while(temp -> next !=  head)
+        {
+            printf("\nPID: %d\tCPU Burst Time: %d\tWaiting Time:%d", temp -> procId, temp -> cpuBurst, temp -> waitingTime);
+            temp = temp -> next;
+        }
+        printf("\nPID: %d\tCPU Burst Time: %d\tWaiting Time:%d", temp -> procId, temp -> cpuBurst, temp -> waitingTime);
+    }
+}
+void averageTime() //block 4
+{
+    PCB *temp = head;
+    double avgWaiting = 0.0, dummy = 0.0, avgTurnaround = 0.0;
+    for (int i = numProcess; i > 0; i--)
+    {
+        int p1 = temp -> next -> waitingTime;
+        int p2 = temp -> waitingTime;
+        int p3 = temp -> procId;
+
+        PCB *tail = temp;
+        tail = tail -> next;
+
+        while(tail -> next != temp)
+        {
+            if(tail -> procId == p3)
+            {
+                dummy = (tail -> waitingTime) - p1;
+                break;
+            }
+            else
+            {
+                dummy = p2;
+            }
+            tail = tail -> next;
+        }
+        avgWaiting += dummy;
+        temp = temp -> next;
+    }
+    avgTurnaround = avgWaiting + totalBurstTime;
+    avgWaiting /= numProcess;
+    avgTurnaround /= numProcess;
+    printf("Average waiting time is %lf and average turnaround time is %lf\n",avgWaiting,avgTurnaround);
+}
+int main()
+{
+    int PID,CB;
+    printf("\nThis program implements CPU Scheduling as Round Robin\nEnter time quantum: ");
+    scanf("%lf",&timeQuantum);
+
+    int temp = 1;
+    while(temp != 0)
+    {
+        printf("\nEnter option:\n0. Exit\n1. Add a process\n2. Delete a process\n3. View processes\n4. Average Waiting Time\n> ");
+        int choice;
+        scanf("%d",&choice);
+        switch(choice)
+        {
+            case 1:
+                printf("No. of processes:");
+                scanf("%d",&numProcess);
+                for(int k = 0; k < numProcess; k++)
+                {
+                    printf("Enter the Process ID and burst time: \n");
+                    scanf("%d %d",&PID, &CB);
+                    totalBurstTime += CB;
+                    addProcess(PID,CB); //block 1
+                }
+                orderProcess(); //block 5
+                waiting(); //block 6
+                break;
+
+            case 2:
+                removeProcess(); break; //block 2
+
+            case 3:
+                displayProcess(); break; //block 3
+
+            case 4:
+                averageTime(); break; //block 4
+
+            case 0:
+                temp = 0; break;
+            default:printf("Invalid input");
+        }
+    }
+    return 0;
+}
