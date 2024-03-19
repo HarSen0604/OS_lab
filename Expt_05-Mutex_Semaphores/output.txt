@@ -1,0 +1,27 @@
+hareeshsenthil@Hareeshs-MacBook-Air Expt_05-Mutex_Semaphores % ./prob1
+Enter the number of Fibonacci numbers to generate: 6
+0 1 1 2 3 5 %                                                                                                
+hareeshsenthil@Hareeshs-MacBook-Air Expt_05-Mutex_Semaphores %
+
+
+hareeshsenthil@Hareeshs-MacBook-Air Expt_05-Mutex_Semaphores % ./prob_pid
+Thread 1: Allocated PID 300
+Thread 5: Allocated PID 304
+Thread 3: Allocated PID 302
+Thread 5: Released PID 304
+Thread 4: Allocated PID 303
+Thread 2: Allocated PID 301
+Thread 1: Released PID 300
+Thread 2: Released PID 301
+Thread 4: Released PID 303
+Thread 3: Released PID 302
+hareeshsenthil@Hareeshs-MacBook-Air Expt_05-Mutex_Semaphores %
+
+
+hareeshsenthil@Hareeshs-MacBook-Air Expt_05-Mutex_Semaphores % ./prob_multi
+Enter a positive integer N: 6
+John multiplied by 7 and got 7
+John wins!
+Michael multiplied by 7 and got 7
+Michael wins!
+hareeshsenthil@Hareeshs-MacBook-Air Expt_05-Mutex_Semaphores %
